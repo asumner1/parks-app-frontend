@@ -1,9 +1,9 @@
 'use server';
 
 import { ParkData } from '../types/parks';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { parse } from 'csv-parse/sync';
+import * as fs from 'fs';
+import * as path from 'path';
 
 interface CSVRecord {
   Name: string;
@@ -19,14 +19,31 @@ interface CSVRecord {
 }
 
 export async function getParkData(): Promise<ParkData[]> {
-  console.log('Environment:', process.env.NODE_ENV);
-  console.log('Working directory:', process.cwd());
-  console.log('Directory contents:', fs.readdirSync(process.cwd()));
-  
-  const filePath = path.resolve('./public/data/national_parks.csv');
-  console.log('Attempting to read:', filePath);
-  
-  const fileContent = fs.readFileSync(filePath, 'utf-8');
+  const possiblePaths = [
+    path.join(process.cwd(), 'public', 'national_parks.csv'),
+    './public/national_parks.csv',
+    path.join(process.cwd(), 'national_parks.csv'),
+    './national_parks.csv'
+  ];
+
+  let fileContent: string | null = null;
+  let successPath: string | null = null;
+
+  for (const filePath of possiblePaths) {
+    try {
+      fileContent = fs.readFileSync(filePath, 'utf-8');
+      successPath = filePath;
+      console.log('Successfully read CSV from:', filePath);
+      break;
+    } catch (error) {
+      console.log('Failed to read from:', filePath);
+    }
+  }
+
+  if (!fileContent) {
+    console.error('Could not read CSV from any of these locations:', possiblePaths);
+    throw new Error('CSV file not found in any of the expected locations');
+  }
 
   const records = parse(fileContent, {
     columns: true,
