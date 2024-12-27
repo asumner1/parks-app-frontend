@@ -19,7 +19,13 @@ interface CSVRecord {
 }
 
 export async function getParkData(): Promise<ParkData[]> {
-  const filePath = path.join(process.cwd(), 'public', 'data', 'national_parks.csv');
+  console.log('Environment:', process.env.NODE_ENV);
+  console.log('Working directory:', process.cwd());
+  console.log('Directory contents:', fs.readdirSync(process.cwd()));
+  
+  const filePath = path.resolve('./public/data/national_parks.csv');
+  console.log('Attempting to read:', filePath);
+  
   const fileContent = fs.readFileSync(filePath, 'utf-8');
 
   const records = parse(fileContent, {
