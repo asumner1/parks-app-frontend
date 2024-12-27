@@ -23,7 +23,8 @@ export async function getParkData(): Promise<ParkData[]> {
     path.join(process.cwd(), 'public', 'national_parks.csv'),
     './public/national_parks.csv',
     path.join(process.cwd(), 'national_parks.csv'),
-    './national_parks.csv'
+    './national_parks.csv',
+    'national_parks.csv'
   ];
 
   let fileContent: string | null = null;
