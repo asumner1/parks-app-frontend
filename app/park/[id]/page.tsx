@@ -2,12 +2,11 @@ import { getParkData } from '@/app/actions/getParkData';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
-type Props = {
-  params: { id: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
-
-export default async function ParkPage({ params }: Props) {
+export default async function ParkPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const parks = await getParkData();
   const park = parks.find(p => p.id === params.id);
   
