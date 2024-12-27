@@ -27,16 +27,15 @@ export async function getParkData(): Promise<ParkData[]> {
   ];
 
   let fileContent: string | null = null;
-  let successPath: string | null = null;
 
   for (const filePath of possiblePaths) {
     try {
       fileContent = fs.readFileSync(filePath, 'utf-8');
-      successPath = filePath;
       console.log('Successfully read CSV from:', filePath);
       break;
     } catch (error) {
       console.log('Failed to read from:', filePath);
+      console.log(error);
     }
   }
 
