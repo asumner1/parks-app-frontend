@@ -1,12 +1,37 @@
 import { getParkData } from '@/app/actions/getParkData';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { Metadata } from 'next';
 
-export default async function ParkPage({
-  params,
-}: {
+interface GenerateMetadataProps {
   params: { id: string };
-}) {
+}
+
+export async function generateMetadata({ params }: GenerateMetadataProps): Promise<Metadata> {
+  const parks = await getParkData();
+  const park = parks.find(p => p.id === params.id);
+  
+  if (!park) {
+    return {
+      title: 'Park Not Found',
+    };
+  }
+
+  return {
+    title: park.name,
+    description: park.description,
+  };
+}
+
+interface PageParams {
+  id: string;
+}
+
+interface PageProps {
+  params: PageParams;
+}
+
+async function ParkPage({ params }: PageProps) {
   const parks = await getParkData();
   const park = parks.find(p => p.id === params.id);
   
@@ -77,4 +102,6 @@ export default async function ParkPage({
       </div>
     </div>
   );
-} 
+}
+
+export default ParkPage; 
