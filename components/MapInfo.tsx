@@ -31,7 +31,8 @@ export default function MapInfo() {
       await navigator.clipboard.writeText(mapInfo);
       setCopySuccess('Copied!');
       setTimeout(() => setCopySuccess(''), 2000);
-    } catch (err) {
+    } catch (error: unknown) {
+      console.error('Failed to copy:', error);
       setCopySuccess('Failed to copy');
     }
   };
