@@ -1,5 +1,6 @@
 import { getParkData } from '@/app/actions/getParkData';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 interface PageProps {
   params: {
@@ -18,12 +19,12 @@ export default async function ParkPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <a 
+        <Link 
           href="/"
           className="px-6 py-3 rounded-full bg-forest-500 text-white hover:bg-forest-600 transition-colors inline-flex items-center gap-1 no-underline !text-white mb-6"
         >
           ← Back to Map
-        </a>
+        </Link>
         
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           {park.imageUrl && (
