@@ -46,7 +46,7 @@ export default function Map() {
   const handleMarkerClick = useCallback((e: L.LeafletMouseEvent) => {
     if (!isDesktop) {
       const map = e.target._map;
-      const bounds = map.getBounds();
+      //const bounds = map.getBounds();
       //const center = bounds.getCenter();
       const bottomMiddle = map.containerPointToLatLng([
         map.getSize().x / 2,
