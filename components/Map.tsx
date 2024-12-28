@@ -47,7 +47,7 @@ export default function Map() {
     if (!isDesktop) {
       const map = e.target._map;
       const bounds = map.getBounds();
-      const center = bounds.getCenter();
+      //const center = bounds.getCenter();
       const bottomMiddle = map.containerPointToLatLng([
         map.getSize().x / 2,
         map.getSize().y * 0.85 // Position slightly above the bottom edge
