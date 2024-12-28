@@ -16,7 +16,10 @@ export default function Navbar() {
               parktools.io
             </span>
             <span className="hidden md:block text-xl font-bold text-gray-800">
-              | <span className="font-normal">tools for national park trips</span>
+              | 
+            </span>
+            <span className="hidden md:block text-xl text-gray-800">
+              tools for national park trips
             </span>
           </Link>
 
