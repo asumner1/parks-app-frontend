@@ -13,10 +13,10 @@ export default function Navbar() {
           {/* Logo/Brand */}
           <Link href="/" className="flex items-center space-x-3">
             <span className="text-xl font-bold text-gray-800">
-              parktools.io | 
+              parktools.io
             </span>
-            <span className="text-xl text-gray-800">
-              tools for national park trips
+            <span className="hidden md:block text-xl font-bold text-gray-800">
+              | <span className="font-normal">tools for national park trips</span>
             </span>
           </Link>
 
