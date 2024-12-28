@@ -74,7 +74,7 @@ export default function Map() {
       style={{ zIndex: 1 }}
     >
       <TileLayer
-        attribution='Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+        attribution='Powered by Esri | Sources: Esri, HERE, Garmin, Intermap, INCREMENT P, GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), © OpenStreetMap contributors, GIS User Community'
         url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
       />
       <MapRecenterButton />
@@ -84,11 +84,11 @@ export default function Map() {
           key={park.id}
           position={[park.location.lat, park.location.lng]}
           icon={treeIcon}
-          eventHandlers={!isDesktop ? {
+          eventHandlers={!true /*isDesktop*/ ? {
             click: handleMarkerClick
           } : undefined}
         >
-          <Popup autoPan={isDesktop}>
+          <Popup /*autoPan={isDesktop}*/ >
             <div className="max-w-xs">
               <h3 className="font-bold text-lg text-forest-800">{park.name}</h3>
               <p className="text-sm mt-1 text-gray-600">{park.description.substring(0, 150)}...</p>
