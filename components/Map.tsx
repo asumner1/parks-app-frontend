@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import L from 'leaflet';
 import { ParkData } from '@/app/types/parks';
 import { getParkData } from '@/app/actions/getParkData';
@@ -28,6 +28,7 @@ export default function Map() {
   const [parks, setParks] = useState<ParkData[]>([]);
   const [loading, setLoading] = useState(true);
   const isDesktop = useScreenSize();
+  const showDebugInfo = process.env.NEXT_PUBLIC_SHOW_DEBUG_INFO === 'true';
 
   const defaultCenter = isDesktop 
     ? [35.6751, -113.5547]
@@ -42,6 +43,24 @@ export default function Map() {
     });
   }, []);
 
+  const handleMarkerClick = useCallback((e: L.LeafletMouseEvent) => {
+    if (!isDesktop) {
+      const map = e.target._map;
+      const bounds = map.getBounds();
+      const center = bounds.getCenter();
+      const bottomMiddle = map.containerPointToLatLng([
+        map.getSize().x / 2,
+        map.getSize().y * 0.85 // Position slightly above the bottom edge
+      ]);
+      
+      map.panTo(e.latlng, { animate: true }).then(() => {
+        setTimeout(() => {
+          map.panTo(bottomMiddle, { animate: true });
+        }, 300);
+      });
+    }
+  }, [isDesktop]);
+
   if (loading) {
     return <div>Loading parks data...</div>;
   }
@@ -50,7 +69,7 @@ export default function Map() {
     <MapContainer
       center={defaultCenter as [number, number]}
       zoom={defaultZoom}
-      className="h-[calc(100vh-64px)] w-full"
+      className="h-[calc(100dvh-64px)] w-full"
       scrollWheelZoom={true}
       style={{ zIndex: 1 }}
     >
@@ -59,14 +78,17 @@ export default function Map() {
         url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
       />
       <MapRecenterButton />
-      <MapInfo />
+      {showDebugInfo && <MapInfo />}
       {parks.map((park) => (
         <Marker
           key={park.id}
           position={[park.location.lat, park.location.lng]}
           icon={treeIcon}
+          eventHandlers={!isDesktop ? {
+            click: handleMarkerClick
+          } : undefined}
         >
-          <Popup>
+          <Popup autoPan={isDesktop}>
             <div className="max-w-xs">
               <h3 className="font-bold text-lg text-forest-800">{park.name}</h3>
               <p className="text-sm mt-1 text-gray-600">{park.description.substring(0, 150)}...</p>

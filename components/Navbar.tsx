@@ -7,7 +7,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-lg fixed w-full z-20">
+    <nav className="fixed w-full z-20 bg-white shadow-md">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
@@ -46,7 +46,7 @@ export default function Navbar() {
               onClick={() => setIsOpen(!isOpen)}
             >
               <svg
-                className="w-6 h-6 text-gray-500"
+                className="w-6 h-6 text-gray-600"
                 fill="none"
                 strokeLinecap="round"
                 strokeLinejoin="round"
