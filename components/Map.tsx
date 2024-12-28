@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import L from 'leaflet';
 import { ParkData } from '@/app/types/parks';
 import { getParkData } from '@/app/actions/getParkData';
@@ -43,23 +43,23 @@ export default function Map() {
     });
   }, []);
 
-  const handleMarkerClick = useCallback((e: L.LeafletMouseEvent) => {
-    if (!isDesktop) {
-      const map = e.target._map;
-      //const bounds = map.getBounds();
-      //const center = bounds.getCenter();
-      const bottomMiddle = map.containerPointToLatLng([
-        map.getSize().x / 2,
-        map.getSize().y * 0.85 // Position slightly above the bottom edge
-      ]);
+  // const handleMarkerClick = useCallback((e: L.LeafletMouseEvent) => {
+  //   if (!isDesktop) {
+  //     const map = e.target._map;
+  //     //const bounds = map.getBounds();
+  //     //const center = bounds.getCenter();
+  //     const bottomMiddle = map.containerPointToLatLng([
+  //       map.getSize().x / 2,
+  //       map.getSize().y * 0.85 // Position slightly above the bottom edge
+  //     ]);
       
-      map.panTo(e.latlng, { animate: true }).then(() => {
-        setTimeout(() => {
-          map.panTo(bottomMiddle, { animate: true });
-        }, 300);
-      });
-    }
-  }, [isDesktop]);
+  //     map.panTo(e.latlng, { animate: true }).then(() => {
+  //       setTimeout(() => {
+  //         map.panTo(bottomMiddle, { animate: true });
+  //       }, 300);
+  //     });
+  //   }
+  // }, [isDesktop]);
 
   if (loading) {
     return <div>Loading parks data...</div>;
@@ -84,11 +84,8 @@ export default function Map() {
           key={park.id}
           position={[park.location.lat, park.location.lng]}
           icon={treeIcon}
-          eventHandlers={!true /*isDesktop*/ ? {
-            click: handleMarkerClick
-          } : undefined}
         >
-          <Popup /*autoPan={isDesktop}*/ >
+          <Popup>
             <div className="max-w-xs">
               <h3 className="font-bold text-lg text-forest-800">{park.name}</h3>
               <p className="text-sm mt-1 text-gray-600">{park.description.substring(0, 150)}...</p>
