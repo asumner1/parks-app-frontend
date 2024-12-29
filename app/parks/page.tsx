@@ -92,29 +92,60 @@ export default function ParksPage() {
           {/* Mobile View */}
           <div className="md:hidden">
             {parks.map((park) => (
-              <div key={park.id} className="border-b border-gray-200 p-4">
-                <div className="flex justify-between items-start mb-2">
+              <div key={park.id} className="border-b border-gray-200">
+                <button
+                  onClick={() => {
+                    const details = document.getElementById(`details-${park.id}`);
+                    const icon = document.getElementById(`icon-${park.id}`);
+                    if (details && icon) {
+                      details.classList.toggle('hidden');
+                      icon.classList.toggle('rotate-180');
+                    }
+                  }}
+                  className="w-full p-4 flex justify-between items-center hover:bg-gray-50"
+                >
                   <h3 className="text-lg font-medium text-gray-900">{park.name}</h3>
-                  <Link
-                    href={`/park/${park.id}`}
-                    className="text-forest-600 hover:text-forest-900 text-sm"
+                  <svg
+                    id={`icon-${park.id}`}
+                    className="h-5 w-5 text-gray-500 transform transition-transform duration-200"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    View Details
-                  </Link>
-                </div>
-                <div className="space-y-1 text-sm text-gray-500">
-                  <p>
-                    <span className="font-medium">Location:</span> {park.location.lat.toFixed(2)}°, {park.location.lng.toFixed(2)}°
-                  </p>
-                  <p>
-                    <span className="font-medium">Established:</span> {park.established}
-                  </p>
-                  <p>
-                    <span className="font-medium">Annual Visitors:</span> {park.annualVisitors.toLocaleString()}
-                  </p>
-                  <p>
-                    <span className="font-medium">Area:</span> {park.area}
-                  </p>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                
+                <div id={`details-${park.id}`} className="hidden p-4 bg-gray-50">
+                  <div className="space-y-3 text-sm text-gray-600">
+                    <p>
+                      <span className="font-medium text-gray-900">Location:</span>{' '}
+                      {park.location.lat.toFixed(2)}°, {park.location.lng.toFixed(2)}°
+                    </p>
+                    <p>
+                      <span className="font-medium text-gray-900">Established:</span>{' '}
+                      {park.established}
+                    </p>
+                    <p>
+                      <span className="font-medium text-gray-900">Annual Visitors:</span>{' '}
+                      {park.annualVisitors.toLocaleString()}
+                    </p>
+                    <p>
+                      <span className="font-medium text-gray-900">Area:</span>{' '}
+                      {park.area}
+                    </p>
+                    <Link
+                      href={`/park/${park.id}`}
+                      className="mt-4 inline-block px-4 py-2 bg-forest-600 text-white rounded-md hover:bg-forest-700 transition-colors"
+                    >
+                      View Details
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
