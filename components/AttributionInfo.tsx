@@ -18,7 +18,7 @@ export default function AttributionInfo() {
         </button>
         {showPopup && (
           <div className="absolute bottom-full mb-2 right-0 bg-white p-4 rounded-lg shadow-lg max-w-xs text-sm">
-            <p>{attributionText}</p>
+            <p className="text-black">{attributionText}</p>
           </div>
         )}
       </div>
