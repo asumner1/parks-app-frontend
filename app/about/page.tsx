@@ -17,7 +17,7 @@ export default function AboutPage(): React.ReactElement {
           <section className="bg-white rounded-lg shadow-md p-8 mb-8">
             <h2 className="text-2xl font-bold text-forest-700 mb-4">Coming Soon</h2>
             <p className="text-gray-600">
-              ParkScout.io is currently in beta. We're working hard to bring you the best possible experience for exploring the U.S. national parks. Check back soon for a more detailed description of the site!
+              ParkScout.io is currently in beta. We&apos;re working hard to bring you the best possible experience for exploring the U.S. national parks. Check back soon for a more detailed description of the site!
             </p>
           </section>
         )}
@@ -39,7 +39,7 @@ export default function AboutPage(): React.ReactElement {
           <section className="bg-white rounded-lg shadow-md p-8 mb-8">
             <h2 className="text-2xl font-bold text-forest-700 mb-4">Discover What ParkScout.io Offers</h2>
             <p className="text-gray-600 mb-6">
-              ParkScout.io is more than just a mapping tool—it's your all-in-one trip planning assistant for national parks. Here's how it can enhance your adventures:
+              ParkScout.io is more than just a mapping tool—it&apos;s your all-in-one trip planning assistant for national parks. Here&apos;s how it can enhance your adventures:
             </p>
             <ul className="list-none space-y-4 mb-6">
               <li className="flex items-start">
@@ -68,7 +68,7 @@ export default function AboutPage(): React.ReactElement {
               </li>
             </ul>
             <p className="text-gray-600">
-              What sets ParkScout.io apart? It's crafted by someone who shares your love for the parks, with a focus on usability, authenticity, and the needs of today's travelers.
+              What sets ParkScout.io apart? It&apos;s crafted by someone who shares your love for the parks, with a focus on usability, authenticity, and the needs of today&apos;s travelers.
             </p>
           </section>
 
@@ -79,7 +79,7 @@ export default function AboutPage(): React.ReactElement {
               At ParkScout.io, we believe in the power of nature to inspire, rejuvenate, and connect us with the world around us. My goal is to make national park adventures accessible to everyone, fostering a deeper appreciation for these natural treasures while promoting responsible exploration.
             </p>
             <p className="text-gray-600">
-              I'm constantly working to expand the platform with new features, trails, and insights to help you get the most out of every trip.
+              I&apos;m constantly working to expand the platform with new features, trails, and insights to help you get the most out of every trip.
             </p>
           </section>
 
