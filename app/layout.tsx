@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'National Parks Explorer',
+  title: 'parkscout.io | National Parks Explorer',
   description: 'Explore US National Parks with an interactive map',
 }
 
