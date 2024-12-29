@@ -7,6 +7,18 @@ export async function getParkData(): Promise<ParkData[]> {
   try {
     return parkJson.map((park: any) => ({
       id: park.Name.toLowerCase()
+        .normalize('NFKD')
+        .replace(/[\u0101\u0113\u012B\u014D\u016B]/g, (match: any) => {
+          // Map macron vowels to their basic Latin equivalents
+          const macronToBasic: { [key: string]: string } = {
+            'ā': 'a',
+            'ē': 'e',
+            'ī': 'i',
+            'ō': 'o',
+            'ū': 'u'
+          };
+          return macronToBasic[match] || match;
+        })
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, ''),
       name: park.Name,

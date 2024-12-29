@@ -32,7 +32,8 @@ export default function ParksPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">All National Parks</h1>
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Desktop View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -86,6 +87,37 @@ export default function ParksPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile View */}
+          <div className="md:hidden">
+            {parks.map((park) => (
+              <div key={park.id} className="border-b border-gray-200 p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-medium text-gray-900">{park.name}</h3>
+                  <Link
+                    href={`/park/${park.id}`}
+                    className="text-forest-600 hover:text-forest-900 text-sm"
+                  >
+                    View Details
+                  </Link>
+                </div>
+                <div className="space-y-1 text-sm text-gray-500">
+                  <p>
+                    <span className="font-medium">Location:</span> {park.location.lat.toFixed(2)}°, {park.location.lng.toFixed(2)}°
+                  </p>
+                  <p>
+                    <span className="font-medium">Established:</span> {park.established}
+                  </p>
+                  <p>
+                    <span className="font-medium">Annual Visitors:</span> {park.annualVisitors.toLocaleString()}
+                  </p>
+                  <p>
+                    <span className="font-medium">Area:</span> {park.area}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
