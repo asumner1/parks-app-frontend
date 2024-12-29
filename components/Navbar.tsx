@@ -14,6 +14,9 @@ export default function Navbar() {
           <Link href="/" className="flex items-center space-x-3">
             <span className="text-xl font-bold text-gray-800">
               parkscout.io
+              <span className="ml-1.5 text-xs px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">
+                beta
+              </span>
             </span>
             <span className="hidden md:block text-xl font-bold text-gray-800">
               | 

@@ -97,12 +97,16 @@ export default function ParksPage() {
                   onClick={() => {
                     const details = document.getElementById(`details-${park.id}`);
                     const icon = document.getElementById(`icon-${park.id}`);
-                    if (details && icon) {
+                    const button = document.getElementById(`button-${park.id}`);
+                    if (details && icon && button) {
+                      const isExpanded = !details.classList.contains('hidden');
                       details.classList.toggle('hidden');
                       icon.classList.toggle('rotate-180');
+                      button.classList.toggle('bg-gray-50', !isExpanded);
                     }
                   }}
-                  className="w-full p-4 flex justify-between items-center hover:bg-gray-50"
+                  id={`button-${park.id}`}
+                  className="w-full p-4 flex justify-between items-center transition-colors"
                 >
                   <h3 className="text-lg font-medium text-gray-900">{park.name}</h3>
                   <svg
