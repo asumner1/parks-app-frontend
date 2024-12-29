@@ -11,6 +11,7 @@ import { renderToString } from 'react-dom/server';
 import MapRecenterButton from './MapRecenterButton';
 import MapInfo from './MapInfo';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import AttributionInfo from './AttributionInfo';
 
 const treeIcon = L.divIcon({
   html: renderToString(
@@ -72,11 +73,12 @@ export default function Map() {
       className="h-[calc(100dvh-64px)] w-full"
       scrollWheelZoom={true}
       style={{ zIndex: 1 }}
+      attributionControl={false}
     >
       <TileLayer
-        attribution='Powered by Esri | Sources: Esri, HERE, Garmin, Intermap, INCREMENT P, GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), © OpenStreetMap contributors, GIS User Community'
         url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
       />
+      <AttributionInfo />
       <MapRecenterButton />
       {showDebugInfo && <MapInfo />}
       {parks.map((park) => (
