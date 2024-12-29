@@ -12,7 +12,7 @@ import MapRecenterButton from './MapRecenterButton';
 import MapInfo from './MapInfo';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import AttributionInfo from './AttributionInfo';
-
+import { FaExternalLinkAlt } from 'react-icons/fa';
 const treeIcon = L.divIcon({
   html: renderToString(
     <FaTree className="text-forest-600" size={24} />
@@ -110,7 +110,7 @@ export default function Map() {
                     rel="noopener noreferrer"
                     className={buttonStyle}
                   >
-                    AllTrails
+                    AllTrails <FaExternalLinkAlt size={12} />
                   </a>
                 )}
               </div>
@@ -127,7 +127,7 @@ export default function Map() {
                         className={buttonStyle}
                       >
                         <FaMap className="text-white" size={12} />
-                        Map {park.mapUrls.length > 1 ? index + 1 : ''}
+                        Map {park.mapUrls.length > 1 ? index + 1 : ''}  <FaExternalLinkAlt size={12} />
                       </a>
                     ))}
                   </div>

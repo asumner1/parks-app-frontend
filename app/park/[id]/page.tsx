@@ -2,9 +2,10 @@ import { getParkData } from '@/app/actions/getParkData';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
-export async function generateMetadata({ params }: any) {
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const paramsId = (await params).id;
   const parks = await getParkData();
-  const park = parks.find(p => p.id === params.id);
+  const park = parks.find(p => p.id === paramsId);
   
   if (!park) {
     return {
@@ -18,9 +19,10 @@ export async function generateMetadata({ params }: any) {
   };
 }
 
-export default async function Page({ params }: any) {
+export default async function Page({ params }: { params: { id: string } }) {
+  const paramsId = (await params).id;
   const parks = await getParkData();
-  const park = parks.find(p => p.id === params.id);
+  const park = parks.find(p => p.id === paramsId);
   
   if (!park) {
     notFound();
