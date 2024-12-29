@@ -20,7 +20,7 @@ export default function ParksPage() {
     return (
       <main className="min-h-[calc(100vh-64px)] bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-6">All National Parks</h1>
+          <h1 className="text-3xl text-black font-bold mb-6">All National Parks</h1>
           <div className="animate-pulse">Loading parks data...</div>
         </div>
       </main>
@@ -30,7 +30,7 @@ export default function ParksPage() {
   return (
     <main className="min-h-[calc(100vh-64px)] bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">All National Parks</h1>
+        <h1 className="text-3xl text-black font-bold mb-6">All National Parks</h1>
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Desktop View */}
           <div className="hidden md:block overflow-x-auto">

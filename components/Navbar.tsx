@@ -13,7 +13,7 @@ export default function Navbar() {
           {/* Logo/Brand */}
           <Link href="/" className="flex items-center space-x-3">
             <span className="text-xl font-bold text-gray-800">
-              parktools.io
+              parkscout.io
             </span>
             <span className="hidden md:block text-xl font-bold text-gray-800">
               | 
