@@ -6,7 +6,9 @@ import parkJson from '../../public/national_parks.json';
 export async function getParkData(): Promise<ParkData[]> {
   try {
     return parkJson.map((park: any) => ({
-      id: park.Name.toLowerCase().replace(/\s+/g, '-'),
+      id: park.Name.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, ''),
       name: park.Name,
       description: park.Description,
       location: {
