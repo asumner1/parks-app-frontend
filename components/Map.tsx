@@ -23,7 +23,7 @@ const treeIcon = L.divIcon({
   popupAnchor: [0, -24]
 });
 
-const buttonStyle = "px-6 py-3 rounded-full bg-forest-500 text-white hover:bg-forest-600 transition-colors inline-flex items-center gap-1 no-underline !text-white";
+const buttonStyle = "px-3 py-2 text-sm rounded-full bg-forest-500 text-white hover:bg-forest-600 transition-colors inline-flex items-center gap-1 no-underline !text-white";
 
 export default function Map() {
   const [parks, setParks] = useState<ParkData[]>([]);
