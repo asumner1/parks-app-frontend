@@ -92,9 +92,13 @@ export default function Map() {
               <h3 className="font-bold text-lg text-forest-800">{park.name}</h3>
               <p className="text-sm mt-1 text-gray-600">{park.description.substring(0, 150)}...</p>
               <div className="mt-2 text-sm text-forest-600">
-                <p>Established: {park.established}</p>
-                <p>Annual Visitors: {park.annualVisitors.toLocaleString()}</p>
-                <p>Area: {park.area}</p>
+                <p>
+                  Established: {park.established}
+                  <br />
+                  Annual Visitors: {park.annualVisitors.toLocaleString()}
+                  <br />
+                  Area: {park.area}
+                </p>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <a 

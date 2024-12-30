@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import TestingTable from '@/components/TestingTable';
 
 export default function AboutPage(): React.ReactElement {
   const [showFullContent, setShowFullContent] = useState(false);
@@ -123,6 +124,14 @@ export default function AboutPage(): React.ReactElement {
           >
             {showFullContent ? 'Show Less' : 'Show More'}
           </button>
+        )}
+
+        {/* Add TestingTable at the bottom when debug is enabled */}
+        {showDebugInfo && (
+          <section className="mt-12">
+            <h2 className="text-2xl font-bold text-forest-700 mb-4">Debug: Testing Table</h2>
+            <TestingTable />
+          </section>
         )}
       </div>
     </main>
