@@ -9,6 +9,7 @@ import { FaUser } from 'react-icons/fa';
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -29,11 +30,31 @@ export default function Navbar() {
     try {
       await signOut();
       setUser(null);
+      setShowDropdown(false);
       router.push('/');
     } catch (error) {
       console.error('Error signing out:', error);
     }
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const dropdown = document.getElementById('user-dropdown');
+      const button = document.getElementById('user-button');
+      if (
+        dropdown &&
+        button &&
+        !dropdown.contains(event.target as Node) &&
+        !button.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <nav className="fixed w-full z-20 bg-white shadow-md">
@@ -67,12 +88,21 @@ export default function Navbar() {
               About
             </Link>
             {user ? (
-              <div className="relative group">
-                <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+              <div className="relative">
+                <button
+                  id="user-button"
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+                >
                   <FaUser className="w-4 h-4" />
                   <span>{user.email}</span>
                 </button>
-                <div className="absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl hidden group-hover:block">
+                <div
+                  id="user-dropdown"
+                  className={`absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl ${
+                    showDropdown ? 'block' : 'hidden'
+                  }`}
+                >
                   <button
                     onClick={handleSignOut}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
