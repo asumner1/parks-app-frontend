@@ -38,7 +38,7 @@ export default function Navbar() {
   };
 
   // Get display name from user metadata, fallback to email if not available
-  const displayName = user?.user_metadata?.display_name || user?.email;
+  const displayName = JSON.stringify(user?.user_metadata) || user?.email;
 
   // Close dropdown when clicking outside
   useEffect(() => {
