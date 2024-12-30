@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/utils/supabase';
+import { getTestItems } from '@/app/actions/getTestItems';
 
 interface TestItem {
   id: number;
@@ -20,27 +20,16 @@ export default function TestingTable({ className = '' }: TestingTableProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchTestItems() {
-      try {
-        const { data, error } = await supabase
-          .from('testing')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          throw error;
-        }
-
+    getTestItems()
+      .then(({ data }) => {
         setTestItems(data || []);
-      } catch (err) {
-        console.error('Error fetching test items:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
-      } finally {
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    }
-
-    fetchTestItems();
+      });
   }, []);
 
   if (loading) {

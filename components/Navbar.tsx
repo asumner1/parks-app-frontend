@@ -1,10 +1,39 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getUser, signOut } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
+import { FaUser } from 'react-icons/fa';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const userData = await getUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Error checking user:', error);
+        setUser(null);
+      }
+    };
+
+    checkUser();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setUser(null);
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <nav className="fixed w-full z-20 bg-white shadow-md">
@@ -28,24 +57,38 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link 
-              href="/"
-              className="text-gray-600 hover:text-gray-800 transition-colors"
-            >
+            <Link href="/" className="text-gray-600 hover:text-gray-800 transition-colors">
               Map
             </Link>
-            <Link 
-              href="/parks"
-              className="text-gray-600 hover:text-gray-800 transition-colors"
-            >
+            <Link href="/parks" className="text-gray-600 hover:text-gray-800 transition-colors">
               All Parks
             </Link>
-            <Link 
-              href="/about"
-              className="text-gray-600 hover:text-gray-800 transition-colors"
-            >
+            <Link href="/about" className="text-gray-600 hover:text-gray-800 transition-colors">
               About
             </Link>
+            {user ? (
+              <div className="relative group">
+                <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+                  <FaUser className="w-4 h-4" />
+                  <span>{user.email}</span>
+                </button>
+                <div className="absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl hidden group-hover:block">
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link
+                href="/auth"
+                className="px-4 py-2 text-sm font-medium text-white bg-forest-600 rounded-md hover:bg-forest-700 transition-colors"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -98,6 +141,31 @@ export default function Navbar() {
           >
             About
           </Link>
+          {user ? (
+            <>
+              <div className="px-3 py-2 text-gray-600">
+                <FaUser className="inline-block w-4 h-4 mr-2" />
+                {user.email}
+              </div>
+              <button
+                onClick={() => {
+                  handleSignOut();
+                  setIsOpen(false);
+                }}
+                className="block w-full text-left px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/auth"
+              className="block px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+              onClick={() => setIsOpen(false)}
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
     </nav>
