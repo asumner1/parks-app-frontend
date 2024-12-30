@@ -37,6 +37,9 @@ export default function Navbar() {
     }
   };
 
+  // Get display name from user metadata, fallback to email if not available
+  const displayName = user?.user_metadata?.display_name || user?.email;
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -95,7 +98,7 @@ export default function Navbar() {
                   className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
                 >
                   <FaUser className="w-4 h-4" />
-                  <span>{user.email}</span>
+                  <span>{displayName}</span>
                 </button>
                 <div
                   id="user-dropdown"
@@ -175,7 +178,7 @@ export default function Navbar() {
             <>
               <div className="px-3 py-2 text-gray-600">
                 <FaUser className="inline-block w-4 h-4 mr-2" />
-                {user.email}
+                {displayName}
               </div>
               <button
                 onClick={() => {
