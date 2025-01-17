@@ -1,29 +1,19 @@
-import { getParkData } from '@/app/actions/getParkData';
+'use client';
+
+import { useParks } from '@/lib/context/ParkContext';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { use } from 'react';
 
-export async function generateMetadata({ params }: any) {
-  const paramsId = (await params).id;
-  const parks = await getParkData();
-  const park = parks.find(p => p.id === paramsId);
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const { parks, loading } = useParks();
+  const park = parks.find(p => p.id === resolvedParams.id);
   
-  if (!park) {
-    return {
-      title: 'Park Not Found',
-    };
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
-  return {
-    title: park.name,
-    description: park.description,
-  };
-}
-
-export default async function Page({ params }: any) {
-  const paramsId = (await params).id;
-  const parks = await getParkData();
-  const park = parks.find(p => p.id === paramsId);
-  
   if (!park) {
     notFound();
   }

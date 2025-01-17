@@ -1,20 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { getParkData } from '@/app/actions/getParkData';
-import { ParkData } from '@/app/types/parks';
+import { useParks } from '@/lib/context/ParkContext';
 import Link from 'next/link';
 
 export default function ParksPage() {
-  const [parks, setParks] = useState<ParkData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getParkData().then(data => {
-      setParks(data.sort((a, b) => a.name.localeCompare(b.name)));
-      setLoading(false);
-    });
-  }, []);
+  const { sortedParks, loading } = useParks();
 
   if (loading) {
     return (
@@ -58,7 +48,7 @@ export default function ParksPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {parks.map((park) => (
+                {sortedParks.map((park) => (
                   <tr key={park.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {park.name}
@@ -91,7 +81,7 @@ export default function ParksPage() {
 
           {/* Mobile View */}
           <div className="md:hidden">
-            {parks.map((park) => (
+            {sortedParks.map((park) => (
               <div key={park.id} className="border-b border-gray-200">
                 <button
                   onClick={() => {

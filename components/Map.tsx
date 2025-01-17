@@ -2,17 +2,16 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useState } from 'react';
 import L from 'leaflet';
-import { ParkData } from '@/app/types/parks';
-import { getParkData } from '@/app/actions/getParkData';
-import { FaTree, FaMap } from 'react-icons/fa';
+import { FaTree, FaMap, FaExternalLinkAlt } from 'react-icons/fa';
 import { renderToString } from 'react-dom/server';
 import MapRecenterButton from './MapRecenterButton';
 import MapInfo from './MapInfo';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import AttributionInfo from './AttributionInfo';
-import { FaExternalLinkAlt } from 'react-icons/fa';
+import { useParks } from '@/lib/context/ParkContext';
+import Link from 'next/link';
+
 const treeIcon = L.divIcon({
   html: renderToString(
     <FaTree className="text-forest-600" size={24} />
@@ -26,8 +25,7 @@ const treeIcon = L.divIcon({
 const buttonStyle = "px-3 py-2 text-sm rounded-full bg-forest-500 text-white hover:bg-forest-600 transition-colors inline-flex items-center gap-1 no-underline !text-white";
 
 export default function Map() {
-  const [parks, setParks] = useState<ParkData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { parks, loading } = useParks();
   const isDesktop = useScreenSize();
   const showDebugInfo = process.env.NEXT_PUBLIC_SHOW_DEBUG_INFO === 'true';
 
@@ -36,31 +34,6 @@ export default function Map() {
     : [20.7972, -118.8281];
   
   const defaultZoom = isDesktop ? 3.0 : 2.0;
-
-  useEffect(() => {
-    getParkData().then(data => {
-      setParks(data);
-      setLoading(false);
-    });
-  }, []);
-
-  // const handleMarkerClick = useCallback((e: L.LeafletMouseEvent) => {
-  //   if (!isDesktop) {
-  //     const map = e.target._map;
-  //     //const bounds = map.getBounds();
-  //     //const center = bounds.getCenter();
-  //     const bottomMiddle = map.containerPointToLatLng([
-  //       map.getSize().x / 2,
-  //       map.getSize().y * 0.85 // Position slightly above the bottom edge
-  //     ]);
-      
-  //     map.panTo(e.latlng, { animate: true }).then(() => {
-  //       setTimeout(() => {
-  //         map.panTo(bottomMiddle, { animate: true });
-  //       }, 300);
-  //     });
-  //   }
-  // }, [isDesktop]);
 
   if (loading) {
     return <div>Loading parks data...</div>;
@@ -101,12 +74,12 @@ export default function Map() {
                 </p>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                <a 
+                <Link 
                   href={`/park/${park.id}`}
                   className={buttonStyle}
                 >
                   View Details
-                </a>
+                </Link>
                 {park.allTrailsUrl && (
                   <a 
                     href={park.allTrailsUrl}
@@ -131,7 +104,7 @@ export default function Map() {
                         className={buttonStyle}
                       >
                         <FaMap className="text-white" size={12} />
-                        Map {park.mapUrls.length > 1 ? index + 1 : ''}  <FaExternalLinkAlt size={12} />
+                        Map {park.mapUrls.length > 1 ? index + 1 : ''} <FaExternalLinkAlt size={12} />
                       </a>
                     ))}
                   </div>
