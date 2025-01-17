@@ -2,6 +2,7 @@
 
 import { useParks } from '@/lib/context/ParkContext';
 import Link from 'next/link';
+import VisitedButton from '@/components/VisitedButton';
 
 export default function ParksPage() {
   const { sortedParks, loading } = useParks();
@@ -42,7 +43,7 @@ export default function ParksPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Area
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
                     Actions
                   </th>
                 </tr>
@@ -51,7 +52,7 @@ export default function ParksPage() {
                 {sortedParks.map((park) => (
                   <tr key={park.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {park.name}
+                      <span>{park.name}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {park.location.lat.toFixed(2)}°, {park.location.lng.toFixed(2)}°
@@ -66,12 +67,16 @@ export default function ParksPage() {
                       {park.area}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Link
-                        href={`/park/${park.id}`}
-                        className="text-forest-600 hover:text-forest-900"
-                      >
-                        View Details
-                      </Link>
+                      <div className="flex items-center justify-end gap-3">
+                        <Link
+                          href={`/park/${park.id}`}
+                          className="text-forest-600 hover:text-forest-900"
+                        >
+                          View Details
+                        </Link>
+                        <div className="h-4 w-px bg-gray-300" aria-hidden="true" />
+                        <VisitedButton parkId={park.id} variant="compact" />
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -117,6 +122,9 @@ export default function ParksPage() {
                 
                 <div id={`details-${park.id}`} className="hidden p-4 bg-gray-50">
                   <div className="space-y-3 text-sm text-gray-600">
+                    <div className="flex items-center justify-between">
+                      <VisitedButton parkId={park.id} variant="compact" />
+                    </div>
                     <p>
                       <span className="font-medium text-gray-900">Location:</span>{' '}
                       {park.location.lat.toFixed(2)}°, {park.location.lng.toFixed(2)}°

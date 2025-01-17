@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import { Geist, Geist_Mono } from "next/font/google"
 import { ParkProvider } from '@/lib/context/ParkContext'
+import { AccountPitchProvider } from '@/contexts/AccountPitchContext'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,12 +28,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ParkProvider>
-          <Navbar />
-          <div className="pt-16">
-            {children}
-          </div>
-        </ParkProvider>
+        <AccountPitchProvider>
+          <ParkProvider>
+            <Navbar />
+            <div className="pt-16">
+              {children}
+            </div>
+          </ParkProvider>
+        </AccountPitchProvider>
       </body>
     </html>
   )

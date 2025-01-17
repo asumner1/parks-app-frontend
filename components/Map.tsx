@@ -11,6 +11,7 @@ import { useScreenSize } from '@/hooks/useScreenSize';
 import AttributionInfo from './AttributionInfo';
 import { useParks } from '@/lib/context/ParkContext';
 import Link from 'next/link';
+import VisitedButton from '@/components/VisitedButton';
 
 const treeIcon = L.divIcon({
   html: renderToString(
@@ -62,7 +63,10 @@ export default function Map() {
         >
           <Popup>
             <div className="max-w-xs">
-              <h3 className="font-bold text-lg text-forest-800">{park.name}</h3>
+              <div className="flex justify-between items-start gap-4 mb-2">
+                <h3 className="font-bold text-lg text-forest-800">{park.name}</h3>
+                <VisitedButton parkId={park.id} variant="compact" />
+              </div>
               <p className="text-sm mt-1 text-gray-600">{park.description.substring(0, 150)}...</p>
               <div className="mt-2 text-sm text-forest-600">
                 <p>

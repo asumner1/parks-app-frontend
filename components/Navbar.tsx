@@ -2,34 +2,20 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { getUser, signOut } from '@/lib/supabase';
+import { signOut } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { FaUser } from 'react-icons/fa';
+import { useUser } from '@/hooks/useUser';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const userData = await getUser();
-        setUser(userData);
-      } catch (error) {
-        console.error('Error checking user:', error);
-        setUser(null);
-      }
-    };
-
-    checkUser();
-  }, []);
+  const { user } = useUser();
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      setUser(null);
       setShowDropdown(false);
       router.push('/');
     } catch (error) {
