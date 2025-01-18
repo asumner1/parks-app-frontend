@@ -19,7 +19,7 @@ export default function VisitedButton({
 }: VisitedButtonProps) {
   const { showAccountPitch } = useAccountPitch();
   const { user } = useUser();
-  const { isVisited, toggleVisitedPark, loading } = useUserContext();
+  const { isVisited, toggleVisitedPark } = useUserContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleToggleVisited = async () => {
