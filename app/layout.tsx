@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar'
 import { Geist, Geist_Mono } from "next/font/google"
 import { ParkProvider } from '@/lib/context/ParkContext'
 import { AccountPitchProvider } from '@/contexts/AccountPitchContext'
+import { UserProvider } from '@/contexts/UserContext'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,10 +31,12 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AccountPitchProvider>
           <ParkProvider>
-            <Navbar />
-            <div className="pt-16">
-              {children}
-            </div>
+            <UserProvider>
+              <Navbar />
+              <div className="pt-16">
+                {children}
+              </div>
+            </UserProvider>
           </ParkProvider>
         </AccountPitchProvider>
       </body>

@@ -3,30 +3,49 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { FaTree, FaMap, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaMap, FaExternalLinkAlt, FaCheckCircle, FaTree } from 'react-icons/fa';
+//import { MdOutlinePark, MdPark } from 'react-icons/md';
 import { renderToString } from 'react-dom/server';
 import MapRecenterButton from './MapRecenterButton';
 import MapInfo from './MapInfo';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import AttributionInfo from './AttributionInfo';
 import { useParks } from '@/lib/context/ParkContext';
+import { useUserContext } from '@/contexts/UserContext';
 import Link from 'next/link';
 import VisitedButton from '@/components/VisitedButton';
 
-const treeIcon = L.divIcon({
-  html: renderToString(
-    <FaTree className="text-forest-600" size={24} />
-  ),
-  className: 'custom-div-icon',
-  iconSize: [24, 24],
-  iconAnchor: [12, 24],
-  popupAnchor: [0, -24]
-});
+const createParkIcon = (isVisited: boolean) => {
+  const iconHtml = renderToString(
+    <div className="relative">
+      {isVisited ? (
+        <>
+          <FaTree className="text-forest-600" size={24} />
+          <FaCheckCircle 
+            className="text-forest-500 absolute -top-1 -right-1" 
+            size={10} 
+          />
+        </>
+      ) : (
+        <FaTree className="text-forest-600" size={24} />
+      )}
+    </div>
+  );
+
+  return L.divIcon({
+    html: iconHtml,
+    className: 'custom-div-icon',
+    iconSize: [24, 24],
+    iconAnchor: [12, 24],
+    popupAnchor: [0, -24]
+  });
+};
 
 const buttonStyle = "px-3 py-2 text-sm rounded-full bg-forest-500 text-white hover:bg-forest-600 transition-colors inline-flex items-center gap-1 no-underline !text-white";
 
 export default function Map() {
   const { parks, loading } = useParks();
+  const { isVisited } = useUserContext();
   const isDesktop = useScreenSize();
   const showDebugInfo = process.env.NEXT_PUBLIC_SHOW_DEBUG_INFO === 'true';
 
@@ -59,7 +78,7 @@ export default function Map() {
         <Marker
           key={park.id}
           position={[park.location.lat, park.location.lng]}
-          icon={treeIcon}
+          icon={createParkIcon(isVisited(park.id))}
         >
           <Popup>
             <div className="max-w-xs">

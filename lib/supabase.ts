@@ -18,8 +18,17 @@ export const supabase = createClient(
 
 export const signInWithGoogle = async () => {
   try {
+    const options = process.env.NODE_ENV === 'development' 
+      ? {
+          options: {
+            redirectTo: 'http://localhost:3000'
+          }
+        }
+      : {};
+
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google'
+      provider: 'google',
+      ...options
     });
 
     if (error) throw error;
@@ -91,5 +100,50 @@ export async function getAllParks(): Promise<ParkData[]> {
   } catch (error) {
     console.error('Failed to fetch parks:', error)
     throw new Error('Failed to fetch parks data')
+  }
+}
+
+export async function getVisitedParks(userId: string): Promise<string[]> {
+  try {
+    const { data, error } = await supabase
+      .from('user_park_visits')
+      .select('park_id')
+      .eq('user_id', userId);
+
+    if (error) throw error;
+    if (!data) return [];
+
+    return data.map(item => item.park_id);
+  } catch (error) {
+    console.error('Error fetching visited parks:', error);
+    return [];
+  }
+}
+
+export async function addVisitedPark(userId: string, parkId: string): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('user_park_visits')
+      .insert([{ user_id: userId, park_id: parkId }]);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error adding visited park:', error);
+    throw error;
+  }
+}
+
+export async function removeVisitedPark(userId: string, parkId: string): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('user_park_visits')
+      .delete()
+      .eq('user_id', userId)
+      .eq('park_id', parkId);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error removing visited park:', error);
+    throw error;
   }
 }
