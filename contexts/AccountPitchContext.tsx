@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { useUser } from '@/hooks/useUser';
+import { usePathname } from 'next/navigation';
+import AccountPitch from '@/components/AccountPitch';
+
+// Create a variable outside the component to persist across re-renders
+let hasShownInitialPitch = false;
 
 type AccountPitchContextType = {
   showAccountPitch: () => void;
@@ -12,13 +18,40 @@ const AccountPitchContext = createContext<AccountPitchContextType | undefined>(u
 
 export function AccountPitchProvider({ children }: { children: React.ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);
+  const { user } = useUser();
+  const pathname = usePathname();
 
-  const showAccountPitch = () => setIsVisible(true);
+  // Show the pitch after a delay on first homepage visit
+  useEffect(() => {
+    if (pathname === '/' && !hasShownInitialPitch && !user) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+        hasShownInitialPitch = true;
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [pathname, user]);
+
+  // Hide the pitch when user logs in
+  useEffect(() => {
+    if (user) {
+      setIsVisible(false);
+    }
+  }, [user]);
+
+  const showAccountPitch = () => {
+    if (!user) {
+      setIsVisible(true);
+    }
+  };
+
   const hideAccountPitch = () => setIsVisible(false);
 
   return (
     <AccountPitchContext.Provider value={{ showAccountPitch, hideAccountPitch, isVisible }}>
       {children}
+      <AccountPitch />
     </AccountPitchContext.Provider>
   );
 }
