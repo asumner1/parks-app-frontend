@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { FaCheck } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { useAccountPitch } from '@/contexts/AccountPitchContext';
