@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { FaCheck } from 'react-icons/fa';
 import { useAccountPitch } from '@/contexts/AccountPitchContext';
 import { useUser } from '@/hooks/useUser';
