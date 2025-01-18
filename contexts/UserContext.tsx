@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getVisitedParks, addVisitedPark, removeVisitedPark } from '@/lib/supabase';
+import { getVisitedParks, addVisitedPark, removeVisitedPark, supabase } from '@/lib/supabase';
 import { useUser } from '@/hooks/useUser';
 
 interface UserContextType {
@@ -18,8 +18,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
 
+  // Listen for auth state changes
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        setVisitedParks([]);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Fetch visited parks when user changes
   useEffect(() => {
     async function fetchVisitedParks() {
+      setLoading(true);
       if (!user) {
         setVisitedParks([]);
         setLoading(false);
@@ -31,6 +46,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setVisitedParks(parks);
       } catch (error) {
         console.error('Error fetching visited parks:', error);
+        setVisitedParks([]);
       } finally {
         setLoading(false);
       }
