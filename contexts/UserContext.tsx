@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getVisitedParks, addVisitedPark, removeVisitedPark, supabase } from '@/lib/supabase';
+import { getVisitedParks, addVisitedPark, removeVisitedPark } from '@/lib/supabase';
 import { useUser } from '@/hooks/useUser';
 
 interface UserContextType {
@@ -17,20 +17,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [visitedParks, setVisitedParks] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
-
-  // Listen for auth state changes
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id);
-      if (event === 'SIGNED_OUT') {
-        setVisitedParks([]);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   // Fetch visited parks when user changes
   useEffect(() => {

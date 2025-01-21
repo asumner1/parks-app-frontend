@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { getUser, supabase } from '@/lib/supabase';
 
-// Global state to cache user data
+// Global state to cache user data and subscription
 let globalUser: any = null;
 let globalLoading = true;
+let globalSubscription: any = null;
 let subscribers = new Set<(user: any) => void>();
 
 const notifySubscribers = (user: any) => {
@@ -24,23 +25,23 @@ export function useUser() {
     setUser(globalUser);
     setLoading(globalLoading);
 
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event);
-      
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        if (session?.user && !globalUser) {
-          const userData = await getUser();
-          globalUser = userData;
+    // Set up auth state change listener only once
+    if (!globalSubscription) {
+      globalSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session?.user && !globalUser) {
+            const userData = await getUser();
+            globalUser = userData;
+            globalLoading = false;
+            notifySubscribers(userData);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          globalUser = null;
           globalLoading = false;
-          notifySubscribers(userData);
+          notifySubscribers(null);
         }
-      } else if (event === 'SIGNED_OUT') {
-        globalUser = null;
-        globalLoading = false;
-        notifySubscribers(null);
-      }
-    });
+      });
+    }
 
     // Only fetch user data if we haven't done it yet
     if (globalLoading) {
@@ -53,7 +54,6 @@ export function useUser() {
 
     return () => {
       subscribers.delete(setUser);
-      subscription.unsubscribe();
     };
   }, []);
 
