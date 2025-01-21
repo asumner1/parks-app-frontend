@@ -14,7 +14,7 @@ export function useUser() {
       try {
         const userData = await getUser();
         if (isMounted) {
-          console.log('User data fetched:', userData?.id);
+          console.log('User data fetched:', userData);
           setUser(userData);
         }
       } catch (error) {
