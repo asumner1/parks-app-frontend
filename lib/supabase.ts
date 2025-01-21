@@ -121,6 +121,7 @@ export async function getVisitedParks(userId: string): Promise<string[]> {
       return [];
     }
 
+    console.log('Fetched visited parks data:', data);
     const parkIds = data.map(item => item.park_id);
     console.log('Found visited parks:', parkIds);
     return parkIds;
