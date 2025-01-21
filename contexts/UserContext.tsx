@@ -20,7 +20,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Listen for auth state changes
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id);
       if (event === 'SIGNED_OUT') {
         setVisitedParks([]);
       }
@@ -33,26 +34,41 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Fetch visited parks when user changes
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchVisitedParks() {
       setLoading(true);
       if (!user) {
+        console.log('No user, clearing visited parks');
         setVisitedParks([]);
         setLoading(false);
         return;
       }
 
+      console.log('Fetching visited parks for user:', user.id);
       try {
         const parks = await getVisitedParks(user.id);
-        setVisitedParks(parks);
+        if (isMounted) {
+          console.log('Setting visited parks:', parks);
+          setVisitedParks(parks);
+        }
       } catch (error) {
         console.error('Error fetching visited parks:', error);
-        setVisitedParks([]);
+        if (isMounted) {
+          setVisitedParks([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     fetchVisitedParks();
+
+    return () => {
+      isMounted = false;
+    };
   }, [user]);
 
   const toggleVisitedPark = async (parkId: string) => {

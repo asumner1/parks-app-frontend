@@ -20,10 +20,11 @@ export function AccountPitchProvider({ children }: { children: React.ReactNode }
   const [isVisible, setIsVisible] = useState(false);
   const { user } = useUser();
   const pathname = usePathname();
+  const showInitialPitch = false;
 
   // Show the pitch after a delay on first homepage visit
   useEffect(() => {
-    if (pathname === '/' && !hasShownInitialPitch && !user) {
+    if (pathname === '/' && !hasShownInitialPitch && !user && showInitialPitch) {
       const timer = setTimeout(() => {
         setIsVisible(true);
         hasShownInitialPitch = true;
@@ -31,7 +32,7 @@ export function AccountPitchProvider({ children }: { children: React.ReactNode }
 
       return () => clearTimeout(timer);
     }
-  }, [pathname, user]);
+  }, [pathname, user, showInitialPitch]);
 
   // Hide the pitch when user logs in
   useEffect(() => {

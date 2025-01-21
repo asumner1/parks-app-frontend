@@ -104,16 +104,26 @@ export async function getAllParks(): Promise<ParkData[]> {
 }
 
 export async function getVisitedParks(userId: string): Promise<string[]> {
+  console.log('Fetching visited parks for user:', userId);
   try {
     const { data, error } = await supabase
       .from('user_park_visits')
       .select('park_id')
       .eq('user_id', userId);
 
-    if (error) throw error;
-    if (!data) return [];
+    if (error) {
+      console.error('Database error fetching visited parks:', error);
+      throw error;
+    }
+    
+    if (!data) {
+      console.log('No visited parks data found');
+      return [];
+    }
 
-    return data.map(item => item.park_id);
+    const parkIds = data.map(item => item.park_id);
+    console.log('Found visited parks:', parkIds);
+    return parkIds;
   } catch (error) {
     console.error('Error fetching visited parks:', error);
     return [];
