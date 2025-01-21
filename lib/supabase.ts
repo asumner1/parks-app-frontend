@@ -42,6 +42,11 @@ export const signOut = async () => {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    
+    // Force clear any cached session data
+    await supabase.auth.getSession();
+    
+    return { success: true };
   } catch (error) {
     console.error('Error signing out:', error);
     throw error;
