@@ -7,6 +7,7 @@ import { getUser, supabase } from '@/lib/supabase';
 let globalUser: any = null;
 let globalLoading = true;
 let globalSubscription: any = null;
+let initialSessionChecked = false;
 let subscribers = new Set<(user: any) => void>();
 
 const notifySubscribers = (user: any) => {
@@ -25,31 +26,42 @@ export function useUser() {
     setUser(globalUser);
     setLoading(globalLoading);
 
-    // Set up auth state change listener only once
-    if (!globalSubscription) {
-      globalSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          if (session?.user && !globalUser) {
-            const userData = await getUser();
+    // Only check initial session once across all instances
+    if (!initialSessionChecked) {
+      initialSessionChecked = true;
+      
+      // Get initial session
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          getUser().then(userData => {
             globalUser = userData;
             globalLoading = false;
             notifySubscribers(userData);
-          }
-        } else if (event === 'SIGNED_OUT') {
+          });
+        } else {
           globalUser = null;
           globalLoading = false;
           notifySubscribers(null);
         }
       });
-    }
 
-    // Only fetch user data if we haven't done it yet
-    if (globalLoading) {
-      getUser().then(userData => {
-        globalUser = userData;
-        globalLoading = false;
-        notifySubscribers(userData);
-      });
+      // Set up auth state change listener only once
+      if (!globalSubscription) {
+        globalSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            if (session?.user) {
+              const userData = await getUser();
+              globalUser = userData;
+              globalLoading = false;
+              notifySubscribers(userData);
+            }
+          } else if (event === 'SIGNED_OUT') {
+            globalUser = null;
+            globalLoading = false;
+            notifySubscribers(null);
+          }
+        });
+      }
     }
 
     return () => {
