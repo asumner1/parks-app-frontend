@@ -13,10 +13,16 @@ export default function Navbar() {
   const router = useRouter();
   const { user } = useUser();
 
+  // Reset dropdown state when user changes
+  useEffect(() => {
+    setShowDropdown(false);
+  }, [user]);
+
   const handleSignOut = async () => {
     try {
       await signOut();
       setShowDropdown(false);
+      setIsOpen(false);
       router.push('/');
     } catch (error) {
       console.error('Error signing out:', error);
