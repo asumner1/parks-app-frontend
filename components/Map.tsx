@@ -17,24 +17,24 @@ import VisitedButton from '@/components/VisitedButton';
 
 const createParkIcon = (isVisited: boolean) => {
   const iconHtml = renderToString(
-    <div className="relative">
-      {isVisited ? (
-        <>
-          {/* Tree icon */}
-          <FaTree className="text-forest-600" size={24} />
-          {/* Checkmark icon */}
-          <div 
-            className="absolute -top-2 -right-2 flex items-center justify-center rounded-full bg-white" 
-            style={{ width: 16, height: 16 }}
-          >
-            <FaCheckCircle 
-              className="text-forest-500" 
-              size={14} 
-            />
-          </div>
-        </>
-      ) : (
-        <FaTree className="text-forest-600" size={24} />
+    <div className="relative" style={{ width: 28, height: 28 }}>
+      {/* Tree icon */}
+      <FaTree className="text-forest-600" size={24} style={{ position: 'absolute', zIndex: 1 }} />
+      
+      {isVisited && (
+        <FaCheckCircle
+          className="text-forest-500"
+          size={16}
+          style={{
+            position: 'absolute',
+            top: -4, // Adjust to overlap the tree
+            right: -4, // Adjust to overlap the tree
+            zIndex: 2, // Ensure it appears above the tree icon
+            backgroundColor: 'white',
+            borderRadius: '50%', // Circular background
+            padding: 2, // Add padding for spacing around the checkmark
+          }}
+        />
       )}
     </div>
   );
@@ -42,9 +42,9 @@ const createParkIcon = (isVisited: boolean) => {
   return L.divIcon({
     html: iconHtml,
     className: 'custom-div-icon',
-    iconSize: [28, 28], // Adjusted to accommodate the larger checkmark
-    iconAnchor: [14, 28], // Centered for the adjusted icon size
-    popupAnchor: [0, -28]
+    iconSize: [28, 28], // Adjust to fit both icons
+    iconAnchor: [14, 28], // Anchor point
+    popupAnchor: [0, -28],
   });
 };
 
