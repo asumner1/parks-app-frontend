@@ -20,11 +20,18 @@ const createParkIcon = (isVisited: boolean) => {
     <div className="relative">
       {isVisited ? (
         <>
+          {/* Tree icon */}
           <FaTree className="text-forest-600" size={24} />
-          <FaCheckCircle 
-            className="text-forest-500 absolute -top-1 -right-1" 
-            size={10} 
-          />
+          {/* Checkmark icon */}
+          <div 
+            className="absolute -top-2 -right-2 flex items-center justify-center rounded-full bg-white" 
+            style={{ width: 16, height: 16 }}
+          >
+            <FaCheckCircle 
+              className="text-forest-500" 
+              size={14} 
+            />
+          </div>
         </>
       ) : (
         <FaTree className="text-forest-600" size={24} />
@@ -35,9 +42,9 @@ const createParkIcon = (isVisited: boolean) => {
   return L.divIcon({
     html: iconHtml,
     className: 'custom-div-icon',
-    iconSize: [24, 24],
-    iconAnchor: [12, 24],
-    popupAnchor: [0, -24]
+    iconSize: [28, 28], // Adjusted to accommodate the larger checkmark
+    iconAnchor: [14, 28], // Centered for the adjusted icon size
+    popupAnchor: [0, -28]
   });
 };
 
