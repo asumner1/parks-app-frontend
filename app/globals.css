@@ -49,3 +49,24 @@ body {
   color: #458545;
   background-color: #f3f9f3;
 }
+
+.leaflet-control-layers {
+  border: 2px solid rgba(56, 166, 56, 0.2) !important;
+  border-radius: 4px !important;
+}
+
+.leaflet-control-layers-toggle {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.leaflet-control-layers-expanded {
+  padding: 6px 10px 6px 6px !important;
+  background-color: white !important;
+  color: #171717 !important;
+}
+
+/* Hide layer control when user is not logged in */
+.layers-disabled .leaflet-control-layers {
+  display: none !important;
+}
