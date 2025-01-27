@@ -1,4 +1,4 @@
-import { Marker, Popup, LayerGroup, useMap } from 'react-leaflet';
+import { Marker, Popup, LayerGroup} from 'react-leaflet';
 import { ParkData } from '@/app/types/parks';
 import Link from 'next/link';
 import { FaMap, FaExternalLinkAlt, FaTree, FaCheckCircle } from 'react-icons/fa';
