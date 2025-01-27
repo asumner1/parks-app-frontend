@@ -37,7 +37,7 @@ export function ParkProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshParks = async () => {
-    const freshCachedParks = cache(getAllParks);
+    cache(getAllParks);
     await fetchParks();
   };
 
