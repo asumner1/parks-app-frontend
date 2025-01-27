@@ -13,6 +13,9 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+// Cache visited parks data outside component to persist across re-renders
+const visitedParksCache = new Map<string, string[]>();
+
 export function UserProvider({ children }: { children: ReactNode }) {
   const [visitedParks, setVisitedParks] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,9 +29,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      // Check if we have cached data for this user
+      if (visitedParksCache.has(user.id)) {
+        setVisitedParks(visitedParksCache.get(user.id) || []);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const parks = await getVisitedParks(user.id);
+        visitedParksCache.set(user.id, parks);
         setVisitedParks(parks);
       } catch (error) {
         console.error('Error fetching visited parks:', error);
@@ -49,10 +60,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       if (isCurrentlyVisited) {
         await removeVisitedPark(user.id, parkId);
-        setVisitedParks(prev => prev.filter(id => id !== parkId));
+        const newParks = visitedParks.filter(id => id !== parkId);
+        setVisitedParks(newParks);
+        visitedParksCache.set(user.id, newParks);
       } else {
         await addVisitedPark(user.id, parkId);
-        setVisitedParks(prev => [...prev, parkId]);
+        const newParks = [...visitedParks, parkId];
+        setVisitedParks(newParks);
+        visitedParksCache.set(user.id, newParks);
       }
     } catch (error) {
       console.error(error);
