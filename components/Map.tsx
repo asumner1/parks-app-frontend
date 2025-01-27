@@ -1,6 +1,6 @@
 'use client';
 
-import { MapContainer, TileLayer, LayersControl } from 'react-leaflet';
+import { MapContainer, TileLayer, LayersControl, LayerGroup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 //import { MdOutlinePark, MdPark } from 'react-icons/md';
 
@@ -37,31 +37,36 @@ export default function Map() {
       style={{ zIndex: 1 }}
       attributionControl={false}
     >
-      {/* Base layer outside of LayersControl */}
       <TileLayer
         url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
       />
 
       <LayersControl position="topright">
-        {/* Only Overlays in the control */}
-        <LayersControl.Overlay checked name="Visited Parks">
+        <LayersControl.BaseLayer checked name="All Parks">
+          <FilteredParkMarkers 
+            parks={parks}
+            condition={() => true}
+            showCheckmark={(park) => isVisited(park.id)}
+          />
+        </LayersControl.BaseLayer>
+
+        <LayersControl.BaseLayer name="Visited Parks">
           <FilteredParkMarkers 
             parks={parks}
             condition={(park) => isVisited(park.id)}
             showCheckmark={true}
           />
-        </LayersControl.Overlay>
+        </LayersControl.BaseLayer>
 
-        <LayersControl.Overlay checked name="Unvisited Parks">
+        <LayersControl.BaseLayer name="Unvisited Parks">
           <FilteredParkMarkers 
             parks={parks}
             condition={(park) => !isVisited(park.id)}
             showCheckmark={false}
           />
-        </LayersControl.Overlay>
+        </LayersControl.BaseLayer>
       </LayersControl>
 
-      {/* Components outside LayersControl will always be visible */}
       <AttributionInfo />
       <MapRecenterButton />
       {showDebugInfo && <MapInfo />}

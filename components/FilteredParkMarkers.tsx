@@ -5,12 +5,11 @@ import { FaMap, FaExternalLinkAlt, FaTree, FaCheckCircle } from 'react-icons/fa'
 import VisitedButton from '@/components/VisitedButton';
 import { renderToString } from 'react-dom/server';
 import L from 'leaflet';
-import { useMemo, useState } from 'react';
 
 interface FilteredParkMarkersProps {
   parks: ParkData[];
   condition: (park: ParkData) => boolean;
-  showCheckmark?: boolean;
+  showCheckmark?: boolean | ((park: ParkData) => boolean);
 }
 
 const buttonStyle = "px-3 py-2 text-sm rounded-full bg-forest-500 text-white hover:bg-forest-600 transition-colors inline-flex items-center gap-1 no-underline !text-white";
@@ -48,9 +47,7 @@ const createParkIcon = (isVisited: boolean) => {
 };
 
 export default function FilteredParkMarkers({ parks, condition, showCheckmark = true }: FilteredParkMarkersProps) {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  const memoizedLayerGroup = useMemo(() => (
+  return (
     <LayerGroup>
       {parks
         .filter(condition)
@@ -58,14 +55,9 @@ export default function FilteredParkMarkers({ parks, condition, showCheckmark = 
           <Marker
             key={park.id}
             position={[park.location.lat, park.location.lng]}
-            icon={createParkIcon(showCheckmark)}
+            icon={createParkIcon(typeof showCheckmark === 'function' ? showCheckmark(park) : showCheckmark)}
           >
-            <Popup
-              eventHandlers={{
-                add: () => setIsPopupOpen(true),
-                remove: () => setIsPopupOpen(false),
-              }}
-            >
+            <Popup>
               <div className="max-w-xs">
                 <div className="flex justify-between items-start gap-4 mb-2">
                   <h3 className="font-bold text-lg text-forest-800">{park.name}</h3>
@@ -123,7 +115,5 @@ export default function FilteredParkMarkers({ parks, condition, showCheckmark = 
           </Marker>
         ))}
     </LayerGroup>
-  ), [parks, condition, showCheckmark, isPopupOpen]);
-
-  return memoizedLayerGroup;
+  );
 } 
