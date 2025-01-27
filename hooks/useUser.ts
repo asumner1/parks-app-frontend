@@ -97,34 +97,39 @@ export function useUser() {
       }
     };
 
-    // Set up auth state change listener
-    if (!globalSubscription) {
-      console.log('[useUser] Setting up auth state change listener');
-      globalSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
-        console.log('[useUser] Auth state changed:', event, 'Session:', session?.user?.id);
-        if (!mounted) return;
-        
-        try {
-          switch (event) {
-            case 'SIGNED_IN':
-            case 'TOKEN_REFRESHED':
-            case 'USER_UPDATED':
-              await updateUser(session);
-              break;
-            case 'SIGNED_OUT':
-              console.log('[useUser] User signed out');
-              globalUser = null;
-              globalLoading = false;
-              await notifySubscribers(null);
-              break;
+    // Initialize session first
+    const init = async () => {
+      await initSession();
+      
+      // Only set up subscription after initial session check
+      if (!globalSubscription && mounted) {
+        console.log('[useUser] Setting up auth state change listener');
+        globalSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log('[useUser] Auth state changed:', event, 'Session:', session?.user?.id);
+          if (!mounted) return;
+          
+          try {
+            switch (event) {
+              case 'SIGNED_IN':
+              case 'TOKEN_REFRESHED':
+              case 'USER_UPDATED':
+                await updateUser(session);
+                break;
+              case 'SIGNED_OUT':
+                console.log('[useUser] User signed out');
+                globalUser = null;
+                globalLoading = false;
+                await notifySubscribers(null);
+                break;
+            }
+          } catch (error) {
+            console.error('[useUser] Error in auth state change:', error);
           }
-        } catch (error) {
-          console.error('[useUser] Error in auth state change:', error);
-        }
-      });
-    }
+        });
+      }
+    };
 
-    initSession();
+    init();
 
     return () => {
       console.log('[useUser] Cleaning up hook');
