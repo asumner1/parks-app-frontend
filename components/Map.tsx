@@ -34,7 +34,7 @@ export default function Map() {
     <MapContainer
       center={defaultCenter as [number, number]}
       zoom={defaultZoom}
-      className={`h-[calc(100dvh-64px)] w-full ${!user ? 'layers-disabled' : ''}`}
+      className="h-[calc(100dvh-64px)] w-full"
       scrollWheelZoom={true}
       style={{ zIndex: 1 }}
       attributionControl={false}

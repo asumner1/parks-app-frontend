@@ -1,9 +1,10 @@
-import { Marker, Popup, LayerGroup } from 'react-leaflet';
+import { Marker, Popup, LayerGroup, useMap } from 'react-leaflet';
 import { ParkData } from '@/app/types/parks';
 import Link from 'next/link';
 import { FaMap, FaExternalLinkAlt } from 'react-icons/fa';
 import VisitedButton from '@/components/VisitedButton';
 import { createParkIcon } from '@/lib/mapUtils';
+import { useEffect, useRef } from 'react';
 
 interface FilteredParkMarkersProps {
   parks: ParkData[];
@@ -14,6 +15,20 @@ interface FilteredParkMarkersProps {
 const buttonStyle = "px-3 py-2 text-sm rounded-full bg-forest-500 text-white hover:bg-forest-600 transition-colors inline-flex items-center gap-1 no-underline !text-white";
 
 export default function FilteredParkMarkers({ parks, condition, showCheckmark = true }: FilteredParkMarkersProps) {
+  const map = useMap();
+  const openPopupRef = useRef<{ markerId: string; popup: L.Popup } | null>(null);
+
+  // Effect to restore popup state after marker re-renders
+  useEffect(() => {
+    if (openPopupRef.current) {
+      const { markerId, popup } = openPopupRef.current;
+      const marker = (map as any)._layers[markerId];
+      if (marker) {
+        marker.bindPopup(popup).openPopup();
+      }
+    }
+  }, [map, parks, condition]);
+
   return (
     <LayerGroup>
       {parks
@@ -23,6 +38,17 @@ export default function FilteredParkMarkers({ parks, condition, showCheckmark = 
             key={park.id}
             position={[park.location.lat, park.location.lng]}
             icon={createParkIcon(showCheckmark)}
+            eventHandlers={{
+              popupopen: (e) => {
+                openPopupRef.current = {
+                  markerId: e.target._leaflet_id,
+                  popup: e.target.getPopup()
+                };
+              },
+              popupclose: () => {
+                openPopupRef.current = null;
+              }
+            }}
           >
             <Popup>
               <div className="max-w-xs">
