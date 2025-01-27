@@ -21,6 +21,7 @@ export function useUser() {
   useEffect(() => {
     console.log('[useUser] Hook initialized');
     let mounted = true;
+    let initializationAttempted = false;
 
     // Add subscriber
     subscribers.add(setUser);
@@ -60,17 +61,22 @@ export function useUser() {
 
     // Initialize session
     const initSession = async () => {
+      if (initializationAttempted) return;
+      initializationAttempted = true;
+
       console.log('[useUser] Initializing session');
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
+        if (!mounted) return;
+        
         console.log('[useUser] Got session:', session?.user?.id);
         if (error) throw error;
         await updateUser(session);
       } catch (error) {
         console.error('[useUser] Error getting session:', error);
-        globalUser = null;
-        globalLoading = false;
         if (mounted) {
+          globalUser = null;
+          globalLoading = false;
           setLoading(false);
         }
       }
@@ -81,6 +87,7 @@ export function useUser() {
       console.log('[useUser] Setting up auth state change listener');
       globalSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
         console.log('[useUser] Auth state changed:', event, 'Session:', session?.user?.id);
+        if (!mounted) return;
         
         switch (event) {
           case 'SIGNED_IN':
@@ -94,14 +101,10 @@ export function useUser() {
             globalLoading = false;
             notifySubscribers(null);
             break;
-          default:
-            console.log('[useUser] Unhandled auth event:', event);
-            break;
         }
       });
     }
 
-    // Initialize
     initSession();
 
     return () => {
