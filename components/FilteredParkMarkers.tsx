@@ -5,6 +5,7 @@ import { FaMap, FaExternalLinkAlt, FaTree, FaCheckCircle } from 'react-icons/fa'
 import VisitedButton from '@/components/VisitedButton';
 import { renderToString } from 'react-dom/server';
 import L from 'leaflet';
+import { useMemo, useState } from 'react';
 
 interface FilteredParkMarkersProps {
   parks: ParkData[];
@@ -47,8 +48,9 @@ const createParkIcon = (isVisited: boolean) => {
 };
 
 export default function FilteredParkMarkers({ parks, condition, showCheckmark = true }: FilteredParkMarkersProps) {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  return (
+  const memoizedLayerGroup = useMemo(() => (
     <LayerGroup>
       {parks
         .filter(condition)
@@ -58,7 +60,12 @@ export default function FilteredParkMarkers({ parks, condition, showCheckmark = 
             position={[park.location.lat, park.location.lng]}
             icon={createParkIcon(showCheckmark)}
           >
-            <Popup>
+            <Popup
+              eventHandlers={{
+                add: () => setIsPopupOpen(true),
+                remove: () => setIsPopupOpen(false),
+              }}
+            >
               <div className="max-w-xs">
                 <div className="flex justify-between items-start gap-4 mb-2">
                   <h3 className="font-bold text-lg text-forest-800">{park.name}</h3>
@@ -116,5 +123,7 @@ export default function FilteredParkMarkers({ parks, condition, showCheckmark = 
           </Marker>
         ))}
     </LayerGroup>
-  );
+  ), [parks, condition, showCheckmark, isPopupOpen]);
+
+  return memoizedLayerGroup;
 } 
