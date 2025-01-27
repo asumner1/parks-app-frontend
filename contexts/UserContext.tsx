@@ -18,28 +18,30 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
 
-  // Fetch visited parks when user changes
   useEffect(() => {
+    console.log('[UserContext] User changed:', user?.id);
     let isMounted = true;
 
     async function fetchVisitedParks() {
+      console.log('[UserContext] Fetching visited parks');
       setLoading(true);
+      
       if (!user) {
-        console.log('No user, clearing visited parks');
+        console.log('[UserContext] No user, clearing visited parks');
         setVisitedParks([]);
         setLoading(false);
         return;
       }
 
-      console.log('Fetching visited parks for user:', user.id);
       try {
+        console.log('[UserContext] Fetching parks for user:', user.id);
         const parks = await getVisitedParks(user.id);
         if (isMounted) {
-          console.log('Setting visited parks:', parks);
+          console.log('[UserContext] Setting visited parks:', parks);
           setVisitedParks(parks);
         }
       } catch (error) {
-        console.error('Error fetching visited parks:', error);
+        console.error('[UserContext] Error fetching visited parks:', error);
         if (isMounted) {
           setVisitedParks([]);
         }
@@ -53,6 +55,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     fetchVisitedParks();
 
     return () => {
+      console.log('[UserContext] Cleaning up effect');
       isMounted = false;
     };
   }, [user]);
