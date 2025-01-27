@@ -19,8 +19,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const { user } = useUser();
 
   useEffect(() => {
-    let mounted = true;
-
     const fetchVisitedParks = async () => {
       if (!user) {
         setVisitedParks([]);
@@ -28,24 +26,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      setLoading(true);
       try {
         const parks = await getVisitedParks(user.id);
-        if (mounted) {
-          setVisitedParks(parks);
-        }
+        setVisitedParks(parks);
       } catch (error) {
-        if (mounted) {
-          setVisitedParks([]);
-        }
+        console.error('Error fetching visited parks:', error);
+        setVisitedParks([]);
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
     fetchVisitedParks();
-    return () => { mounted = false; };
   }, [user]);
 
   const toggleVisitedPark = async (parkId: string) => {
