@@ -5,7 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { ParkProvider } from '@/contexts/ParkContext'
 import { AccountPitchProvider } from '@/contexts/AccountPitchContext'
 import { UserProvider } from '@/contexts/UserContext'
-
+import { AirportProvider } from '@/contexts/AirportContext'
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,12 +31,14 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AccountPitchProvider>
           <ParkProvider>
-            <UserProvider>
-              <Navbar />
-              <div className="pt-16">
-                {children}
-              </div>
-            </UserProvider>
+            <AirportProvider>
+              <UserProvider>
+                <Navbar />
+                <div className="pt-16">
+                  {children}
+                </div>
+              </UserProvider>
+            </AirportProvider>
           </ParkProvider>
         </AccountPitchProvider>
       </body>

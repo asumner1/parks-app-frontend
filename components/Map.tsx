@@ -11,9 +11,12 @@ import AttributionInfo from './AttributionInfo';
 import { useParks } from '@/contexts/ParkContext';
 import { useUserContext } from '@/contexts/UserContext';
 import FilteredParkMarkers from './FilteredParkMarkers';
+import { useAirports } from '@/contexts/AirportContext';
+import AirportMarkers from './AirportMarkers';
 
 export default function Map() {
   const { parks, loading } = useParks();
+  const { airports, loading: airportsLoading } = useAirports();
   const { isVisited } = useUserContext();
   const isDesktop = useScreenSize();
   const showDebugInfo = process.env.NEXT_PUBLIC_SHOW_DEBUG_INFO === 'true';
@@ -24,8 +27,8 @@ export default function Map() {
   
   const defaultZoom = isDesktop ? 3.0 : 2.0;
 
-  if (loading) {
-    return <div>Loading parks data...</div>;
+  if (loading || airportsLoading) {
+    return <div>Loading data...</div>;
   }
 
   return (
@@ -65,6 +68,10 @@ export default function Map() {
             showCheckmark={false}
           />
         </LayersControl.BaseLayer>
+
+        <LayersControl.Overlay name="Relevant Airports">
+          <AirportMarkers airports={airports} />
+        </LayersControl.Overlay>
       </LayersControl>
 
       <AttributionInfo />

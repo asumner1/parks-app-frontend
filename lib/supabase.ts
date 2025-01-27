@@ -173,3 +173,38 @@ export async function removeVisitedPark(userId: string, parkId: string): Promise
     throw error;
   }
 }
+
+export async function getAllAirports() {
+  try {
+    const { data, error } = await supabase
+      .from('airports')
+      .select('*')
+      .order('iata');
+    
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return [];
+    }
+
+    return data.map((airport) => ({
+      id: airport.iata,
+      iata: airport.iata,
+      city: airport.city,
+      role: airport.role,
+      enplanements: airport.enplanements,
+      country_code: airport.country_code,
+      region_name: airport.region_name,
+      airport_name: airport.airport_name,
+      location: {
+        lat: airport.latitude,
+        lng: airport.longitude
+      }
+    }));
+  } catch (error) {
+    console.error('Failed to fetch airports:', error);
+    throw new Error('Failed to fetch airports data');
+  }
+}
