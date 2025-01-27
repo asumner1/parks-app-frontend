@@ -11,12 +11,10 @@ import AttributionInfo from './AttributionInfo';
 import { useParks } from '@/contexts/ParkContext';
 import { useUserContext } from '@/contexts/UserContext';
 import FilteredParkMarkers from './FilteredParkMarkers';
-import { useUser } from '@/hooks/useUser';
 
 export default function Map() {
   const { parks, loading } = useParks();
   const { isVisited } = useUserContext();
-  const { user } = useUser();
   const isDesktop = useScreenSize();
   const showDebugInfo = process.env.NEXT_PUBLIC_SHOW_DEBUG_INFO === 'true';
 
