@@ -9,9 +9,10 @@ let globalLoading = true;
 let globalSubscription: any = null;
 const subscribers = new Set<(user: any) => void>();
 
-const notifySubscribers = (user: any) => {
+const notifySubscribers = async (user: any) => {
   console.log('[useUser] Notifying subscribers with user:', user?.id);
-  subscribers.forEach(callback => callback(user));
+  const promises = Array.from(subscribers).map(callback => callback(user));
+  await Promise.all(promises);
 };
 
 export function useUser() {
@@ -41,16 +42,16 @@ export function useUser() {
           const userData = await getUser();
           console.log('[useUser] Got user data:', userData?.id);
           globalUser = userData;
-          notifySubscribers(userData);
+          await notifySubscribers(userData);
         } else {
           console.log('[useUser] No session, clearing user');
           globalUser = null;
-          notifySubscribers(null);
+          await notifySubscribers(null);
         }
       } catch (error) {
         console.error('[useUser] Error updating user:', error);
         globalUser = null;
-        notifySubscribers(null);
+        await notifySubscribers(null);
       } finally {
         globalLoading = false;
         if (mounted) {
@@ -61,22 +62,36 @@ export function useUser() {
 
     // Initialize session
     const initSession = async () => {
-      if (initializationAttempted) return;
+      if (initializationAttempted) {
+        console.log('[useUser] Session initialization already attempted, skipping');
+        return;
+      }
       initializationAttempted = true;
 
       console.log('[useUser] Initializing session');
       try {
+        console.log('[useUser] Calling auth.getSession()');
         const { data: { session }, error } = await supabase.auth.getSession();
-        if (!mounted) return;
+        console.log('[useUser] auth.getSession() returned:', error ? 'error' : 'success');
+        
+        if (!mounted) {
+          console.log('[useUser] Component unmounted during session init');
+          return;
+        }
+        
+        if (error) {
+          console.log('[useUser] Session error:', error);
+          throw error;
+        }
         
         console.log('[useUser] Got session:', session?.user?.id);
-        if (error) throw error;
         await updateUser(session);
       } catch (error) {
         console.error('[useUser] Error getting session:', error);
         if (mounted) {
           globalUser = null;
           globalLoading = false;
+          await notifySubscribers(null);
           setLoading(false);
         }
       }
@@ -89,18 +104,22 @@ export function useUser() {
         console.log('[useUser] Auth state changed:', event, 'Session:', session?.user?.id);
         if (!mounted) return;
         
-        switch (event) {
-          case 'SIGNED_IN':
-          case 'TOKEN_REFRESHED':
-          case 'USER_UPDATED':
-            await updateUser(session);
-            break;
-          case 'SIGNED_OUT':
-            console.log('[useUser] User signed out');
-            globalUser = null;
-            globalLoading = false;
-            notifySubscribers(null);
-            break;
+        try {
+          switch (event) {
+            case 'SIGNED_IN':
+            case 'TOKEN_REFRESHED':
+            case 'USER_UPDATED':
+              await updateUser(session);
+              break;
+            case 'SIGNED_OUT':
+              console.log('[useUser] User signed out');
+              globalUser = null;
+              globalLoading = false;
+              await notifySubscribers(null);
+              break;
+          }
+        } catch (error) {
+          console.error('[useUser] Error in auth state change:', error);
         }
       });
     }
