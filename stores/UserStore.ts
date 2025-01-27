@@ -9,6 +9,7 @@ class UserStore {
   private subscribers = new Set<Subscriber>();
   private authSubscription: any = null;
   private initializationPromise: Promise<void> | null = null;
+  private lastSessionId: string | null = null;
 
   private constructor() {}
 
@@ -55,6 +56,7 @@ class UserStore {
             break;
           case 'SIGNED_OUT':
             this.user = null;
+            this.lastSessionId = null;
             this.loading = false;
             await this.notifySubscribers();
             break;
@@ -66,11 +68,17 @@ class UserStore {
   }
 
   private async updateUser(session: any) {
-    if (session?.user) {
+    const sessionId = session?.user?.id;
+    
+    // Only fetch user if the session ID has changed
+    if (sessionId && sessionId !== this.lastSessionId) {
+      this.lastSessionId = sessionId;
       this.user = await getUser();
-    } else {
+    } else if (!sessionId) {
       this.user = null;
+      this.lastSessionId = null;
     }
+    
     this.loading = false;
     await this.notifySubscribers();
   }
