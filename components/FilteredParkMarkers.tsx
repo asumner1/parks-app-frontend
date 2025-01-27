@@ -47,7 +47,6 @@ const createParkIcon = (isVisited: boolean) => {
 };
 
 export default function FilteredParkMarkers({ parks, condition, showCheckmark = true }: FilteredParkMarkersProps) {
-  const map = useMap();
 
   return (
     <LayerGroup>
