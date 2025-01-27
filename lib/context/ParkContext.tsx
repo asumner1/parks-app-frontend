@@ -8,32 +8,41 @@ interface ParkContextType {
   parks: ParkData[];
   sortedParks: ParkData[];
   loading: boolean;
+  refreshParks: () => Promise<void>;
 }
 
 const ParkContext = createContext<ParkContextType | undefined>(undefined);
-
-const getCachedParks = cache(async () => {
-  return await getAllParks();
-});
 
 export function ParkProvider({ children }: { children: ReactNode }) {
   const [parks, setParks] = useState<ParkData[]>([]);
   const [sortedParks, setSortedParks] = useState<ParkData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [getCachedParks] = useState(() => cache(getAllParks));
 
-  useEffect(() => {
-    getCachedParks().then(data => {
+  const fetchParks = async () => {
+    try {
+      setLoading(true);
+      const data = await getCachedParks();
       setParks(data);
       setSortedParks([...data].sort((a, b) => a.name.localeCompare(b.name)));
-      setLoading(false);
-    }).catch(error => {
+    } catch (error) {
       console.error('Error fetching parks:', error);
+    } finally {
       setLoading(false);
-    });
+    }
+  };
+
+  useEffect(() => {
+    fetchParks();
   }, []);
 
+  const refreshParks = async () => {
+    const freshCachedParks = cache(getAllParks);
+    await fetchParks();
+  };
+
   return (
-    <ParkContext.Provider value={{ parks, sortedParks, loading }}>
+    <ParkContext.Provider value={{ parks, sortedParks, loading, refreshParks }}>
       {children}
     </ParkContext.Provider>
   );
