@@ -7,8 +7,7 @@ import { getUser, supabase } from '@/lib/supabase';
 let globalUser: any = null;
 let globalLoading = true;
 let globalSubscription: any = null;
-let initialSessionChecked = false;
-let subscribers = new Set<(user: any) => void>();
+const subscribers = new Set<(user: any) => void>();
 
 const notifySubscribers = (user: any) => {
   subscribers.forEach(callback => callback(user));
@@ -19,6 +18,8 @@ export function useUser() {
   const [loading, setLoading] = useState(globalLoading);
 
   useEffect(() => {
+    let mounted = true;
+
     // Add subscriber
     subscribers.add(setUser);
 
@@ -26,46 +27,82 @@ export function useUser() {
     setUser(globalUser);
     setLoading(globalLoading);
 
-    // Only check initial session once across all instances
-    if (!initialSessionChecked) {
-      initialSessionChecked = true;
-      
-      // Get initial session
-      supabase.auth.getSession().then(({ data: { session } }) => {
+    // Function to update user state
+    const updateUser = async (session: any) => {
+      if (!mounted) return;
+
+      try {
         if (session?.user) {
-          getUser().then(userData => {
-            globalUser = userData;
-            globalLoading = false;
-            notifySubscribers(userData);
-          });
+          const userData = await getUser();
+          globalUser = userData;
+          notifySubscribers(userData);
         } else {
           globalUser = null;
-          globalLoading = false;
           notifySubscribers(null);
         }
-      });
+      } catch (error) {
+        console.error('Error updating user:', error);
+        globalUser = null;
+        notifySubscribers(null);
+      } finally {
+        globalLoading = false;
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
 
-      // Set up auth state change listener only once
-      if (!globalSubscription) {
-        globalSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
-          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            if (session?.user) {
-              const userData = await getUser();
-              globalUser = userData;
-              globalLoading = false;
-              notifySubscribers(userData);
-            }
-          } else if (event === 'SIGNED_OUT') {
+    // Initialize session
+    const initSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        await updateUser(session);
+      } catch (error) {
+        console.error('Error getting session:', error);
+        globalUser = null;
+        globalLoading = false;
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    // Set up auth state change listener
+    if (!globalSubscription) {
+      globalSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+        console.log('Auth state changed:', event); // Helpful for debugging
+        
+        switch (event) {
+          case 'SIGNED_IN':
+          case 'TOKEN_REFRESHED':
+          case 'USER_UPDATED':
+            await updateUser(session);
+            break;
+          case 'SIGNED_OUT':
             globalUser = null;
             globalLoading = false;
             notifySubscribers(null);
-          }
-        });
-      }
+            break;
+          default:
+            // Handle other events if needed
+            break;
+        }
+      });
     }
 
+    // Initialize
+    initSession();
+
     return () => {
+      mounted = false;
       subscribers.delete(setUser);
+      
+      // Only remove global subscription when last subscriber is removed
+      if (subscribers.size === 0 && globalSubscription) {
+        globalSubscription.unsubscribe();
+        globalSubscription = null;
+      }
     };
   }, []);
 
