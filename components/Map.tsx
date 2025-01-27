@@ -1,6 +1,6 @@
 'use client';
 
-import { MapContainer, TileLayer, LayersControl, LayerGroup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, LayersControl} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 //import { MdOutlinePark, MdPark } from 'react-icons/md';
 
