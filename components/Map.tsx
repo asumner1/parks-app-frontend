@@ -8,7 +8,7 @@ import MapRecenterButton from './MapRecenterButton';
 import MapInfo from './MapInfo';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import AttributionInfo from './AttributionInfo';
-import { useParks } from '@/lib/context/ParkContext';
+import { useParks } from '@/contexts/ParkContext';
 import { useUserContext } from '@/contexts/UserContext';
 import FilteredParkMarkers from './FilteredParkMarkers';
 import { useUser } from '@/hooks/useUser';

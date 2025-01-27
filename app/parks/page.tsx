@@ -1,6 +1,6 @@
 'use client';
 
-import { useParks } from '@/lib/context/ParkContext';
+import { useParks } from '@/contexts/ParkContext';
 import Link from 'next/link';
 import VisitedButton from '@/components/VisitedButton';
 

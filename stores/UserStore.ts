@@ -10,13 +10,10 @@ class UserStore {
   private authSubscription: any = null;
   private initializationPromise: Promise<void> | null = null;
 
-  private constructor() {
-    console.log('[UserStore] Creating new instance');
-  }
+  private constructor() {}
 
   static getInstance(): UserStore {
     if (!UserStore.instance) {
-      console.log('[UserStore] Initializing singleton instance');
       UserStore.instance = new UserStore();
     }
     return UserStore.instance;
@@ -24,31 +21,20 @@ class UserStore {
 
   async initialize() {
     if (this.initializationPromise) {
-      console.log('[UserStore] Initialization already in progress, waiting...');
       return this.initializationPromise;
     }
 
-    console.log('[UserStore] Starting initialization');
     this.initializationPromise = (async () => {
       try {
-        console.log('[UserStore] Fetching initial session');
         const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('[UserStore] Session error:', error);
-          throw error;
-        }
-        
-        console.log('[UserStore] Got session:', session?.user?.id);
+        if (error) throw error;
         await this.updateUser(session);
         this.setupAuthListener();
       } catch (error) {
-        console.error('[UserStore] Initialization error:', error);
         this.user = null;
         this.loading = false;
         await this.notifySubscribers();
       } finally {
-        console.log('[UserStore] Initialization complete');
         this.initializationPromise = null;
       }
     })();
@@ -57,14 +43,9 @@ class UserStore {
   }
 
   private setupAuthListener() {
-    if (this.authSubscription) {
-      console.log('[UserStore] Auth listener already setup');
-      return;
-    }
+    if (this.authSubscription) return;
 
-    console.log('[UserStore] Setting up auth state listener');
     this.authSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('[UserStore] Auth state changed:', event, 'Session:', session?.user?.id);
       try {
         switch (event) {
           case 'SIGNED_IN':
@@ -73,25 +54,21 @@ class UserStore {
             await this.updateUser(session);
             break;
           case 'SIGNED_OUT':
-            console.log('[UserStore] User signed out');
             this.user = null;
             this.loading = false;
             await this.notifySubscribers();
             break;
         }
       } catch (error) {
-        console.error('[UserStore] Auth state change error:', error);
+        console.error(error);
       }
     });
   }
 
   private async updateUser(session: any) {
-    console.log('[UserStore] Updating user from session:', session?.user?.id);
     if (session?.user) {
       this.user = await getUser();
-      console.log('[UserStore] User updated:', this.user?.id);
     } else {
-      console.log('[UserStore] No session, clearing user');
       this.user = null;
     }
     this.loading = false;
@@ -99,22 +76,17 @@ class UserStore {
   }
 
   private async notifySubscribers() {
-    console.log('[UserStore] Notifying subscribers:', this.subscribers.size);
     const promises = Array.from(this.subscribers).map(cb => cb(this.user));
     await Promise.all(promises);
-    console.log('[UserStore] Finished notifying subscribers');
   }
 
   subscribe(callback: Subscriber): () => void {
-    console.log('[UserStore] Adding subscriber, total:', this.subscribers.size + 1);
     this.subscribers.add(callback);
-    callback(this.user); // Immediate callback with current state
+    callback(this.user);
     
     return () => {
-      console.log('[UserStore] Removing subscriber, remaining:', this.subscribers.size - 1);
       this.subscribers.delete(callback);
       if (this.subscribers.size === 0 && this.authSubscription) {
-        console.log('[UserStore] No more subscribers, cleaning up auth listener');
         this.authSubscription.unsubscribe();
         this.authSubscription = null;
       }
