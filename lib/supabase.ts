@@ -17,7 +17,11 @@ export const supabase = createClient(
   {
     auth: {
       persistSession: true,
-      storageKey: 'parkscout-auth-token'
+      storageKey: 'parkscout-auth-token',
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce'
     }
   }
 );
